@@ -1,5 +1,9 @@
-import { Twitter, MessageCircle, Github } from 'lucide-react';
-import logo from 'figma:asset/3f2a2c68445c8264ea8097c75701cf27e5ac9013.png';
+import { Twitter, Send, ExternalLink } from 'lucide-react';
+import { AnimatedWarLogo } from './AnimatedWarLogo';
+import { CONTRACT_ADDRESS, hasContractAddress } from '../constants';
+
+const X_COMMUNITY_URL = 'https://x.com/i/communities/2033304930375586293';
+const TELEGRAM_URL = 'https://t.me/TINYDWAR';
 
 export function Footer() {
   return (
@@ -8,14 +12,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Branding */}
           <div>
-            <img 
-              src={logo} 
-              alt="TINY D WAR" 
-              className="w-48 mb-4"
-              style={{ imageRendering: 'pixelated' }}
-            />
+            <div className="mb-4">
+              <AnimatedWarLogo variant="footer" />
+            </div>
             <p className="font-mono text-xs text-gray-400 leading-relaxed">
-              A satirical meme coin on the blockchain battlefield. 
+              A satirical meme coin on the blockchain battlefield.
               Maximum chaos, minimum seriousness.
             </p>
             <div className="mt-4 flex gap-2">
@@ -35,11 +36,27 @@ export function Footer() {
               <li className="text-gray-400 hover:text-[#39FF14] transition-colors cursor-pointer">
                 {'>'} AUDIT_REPORT.TXT
               </li>
-              <li className="text-gray-400 hover:text-[#39FF14] transition-colors cursor-pointer">
-                {'>'} CONTRACT_ADDRESS
+              <li className="text-gray-400 flex flex-col gap-0.5">
+                <span>{'>'} CONTRACT_ADDRESS</span>
+                {hasContractAddress() ? (
+                  <span className="text-[#39FF14] text-[10px] font-mono break-all">{CONTRACT_ADDRESS.slice(0, 12)}…{CONTRACT_ADDRESS.slice(-8)}</span>
+                ) : (
+                  <span className="text-[#FFD700] text-[10px] font-pixel">POSTING SOON</span>
+                )}
               </li>
               <li className="text-gray-400 hover:text-[#39FF14] transition-colors cursor-pointer">
                 {'>'} DEXTOOLS_CHART
+              </li>
+              <li>
+                <a
+                  href="https://www.jmail.world"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-gray-400 hover:text-[#39FF14] transition-colors"
+                  title="Gmail-style portal with real Epstein emails"
+                >
+                  {'>'} JMAIL.WORLD <ExternalLink className="w-3 h-3 flex-shrink-0" aria-hidden />
+                </a>
               </li>
             </ul>
           </div>
@@ -47,31 +64,36 @@ export function Footer() {
           {/* Social Links */}
           <div>
             <h4 className="font-pixel text-sm text-[#FF00FF] mb-4">JOIN THE WAR</h4>
-            <div className="flex gap-4">
-              <button className="w-12 h-12 border-4 border-[#39FF14] bg-[#1a1a1a] 
+            <div className="flex flex-wrap gap-4 items-center">
+              <a
+                href={X_COMMUNITY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 border-4 border-[#39FF14] bg-[#1a1a1a] 
                                flex items-center justify-center hover:bg-[#39FF14] 
                                hover:text-[#0D0D0D] transition-all duration-200
                                shadow-[4px_4px_0px_0px_#2a2a2a]
                                hover:shadow-[6px_6px_0px_0px_#2a2a2a]
-                               hover:translate-x-[-2px] hover:translate-y-[-2px]">
+                               hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                aria-label="X Community"
+              >
                 <Twitter className="w-6 h-6" />
-              </button>
-              <button className="w-12 h-12 border-4 border-[#FF00FF] bg-[#1a1a1a] 
-                               flex items-center justify-center hover:bg-[#FF00FF] 
+              </a>
+              <a
+                href={TELEGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 border-4 border-[#39FF14] bg-[#1a1a1a] 
+                               flex items-center justify-center hover:bg-[#39FF14] 
                                hover:text-[#0D0D0D] transition-all duration-200
                                shadow-[4px_4px_0px_0px_#2a2a2a]
                                hover:shadow-[6px_6px_0px_0px_#2a2a2a]
-                               hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                <MessageCircle className="w-6 h-6" />
-              </button>
-              <button className="w-12 h-12 border-4 border-[#FFD700] bg-[#1a1a1a] 
-                               flex items-center justify-center hover:bg-[#FFD700] 
-                               hover:text-[#0D0D0D] transition-all duration-200
-                               shadow-[4px_4px_0px_0px_#2a2a2a]
-                               hover:shadow-[6px_6px_0px_0px_#2a2a2a]
-                               hover:translate-x-[-2px] hover:translate-y-[-2px]">
-                <Github className="w-6 h-6" />
-              </button>
+                               hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                aria-label="TINY D WAR on Telegram"
+                title="Join TINY D WAR on Telegram"
+              >
+                <Send className="w-6 h-6" />
+              </a>
             </div>
           </div>
         </div>
@@ -87,6 +109,9 @@ export function Footer() {
             </p>
             <p className="text-[#39FF14] animate-pulse">
               {'>'} SYSTEM_ONLINE | CHAOS_LEVEL: MAXIMUM
+            </p>
+            <p className="font-mono text-[#39FF14]/70 text-[10px] md:text-xs tracking-widest uppercase mt-2">
+              For the greater good. Decentralized. By the people.
             </p>
           </div>
         </div>

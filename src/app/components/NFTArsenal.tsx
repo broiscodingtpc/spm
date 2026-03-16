@@ -1,14 +1,15 @@
 import { motion } from 'motion/react';
 import { Sparkles, Trophy, Shield } from 'lucide-react';
-import char1 from 'figma:asset/5b2335b2ddeca2f8324c008cee530c38a225e88d.png';
-import char2 from 'figma:asset/34f3b7ff53d8bfe18b9613a4414b79a25de12710.png';
-import char3 from 'figma:asset/af4d6b81fdaccb640fee654c6b721ea644211980.png';
+const char1 = '/images/nftdonald.jpg';
+const char2 = '/images/nftbarackobama.jpg';
+const char3 = '/images/nftepstein.jpg';
+const char4 = '/images/nftnentanyahoo.jpg';
 
 export function NFTArsenal() {
   const characters = [
     {
       image: char1,
-      name: 'JIM JOHN YO',
+      name: 'DONALD DUMP',
       type: 'COOPERATIVE',
       rarity: 'COMMON',
       color: '#39FF14',
@@ -20,7 +21,7 @@ export function NFTArsenal() {
     },
     {
       image: char2,
-      name: 'BARRON DUMP',
+      name: "BLOCK O'DRAMA",
       type: 'ELITE GAMER DIPLOMAT',
       rarity: 'LEGENDARY',
       color: '#FFD700',
@@ -40,6 +41,18 @@ export function NFTArsenal() {
         power: 80,
         defense: 90,
         diplomacy: 60
+      }
+    },
+    {
+      image: char4,
+      name: 'BENJAMIN YAHOO',
+      type: 'INTEL OPERATIVE',
+      rarity: 'RARE',
+      color: '#39FF14',
+      stats: {
+        power: 65,
+        defense: 55,
+        diplomacy: 75
       }
     }
   ];
@@ -99,7 +112,7 @@ export function NFTArsenal() {
         </motion.div>
 
         {/* Character Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {characters.map((character, index) => (
             <motion.div
               key={index}

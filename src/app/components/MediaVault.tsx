@@ -1,8 +1,8 @@
 import { motion } from 'motion/react';
 import { Film, Gamepad2, Tv } from 'lucide-react';
-import poster1 from 'figma:asset/d90a61149f2a3739ffa378e840ac2be28abd9a81.png';
-import poster2 from 'figma:asset/c903e88b7f1d82259740b3b11686d969ad356f8b.png';
-import poster3 from 'figma:asset/37e209b4bbf320f0d97d567b94097d1bc175ff7e.png';
+const poster1 = '/images/parodieseriescomming%20soon.jpg';
+const poster2 = '/images/gamecommingsoon.jpg';
+const poster3 = '/images/seriesimage.jpg';
 
 export function MediaVault() {
   const posters = [

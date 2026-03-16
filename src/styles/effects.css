@@ -346,3 +346,49 @@
 .delay-200 {
   animation-delay: 0.2s;
 }
+
+/* ----- Hacker / Terminal overlay (on top of 8-bit) ----- */
+
+/* Blinking terminal cursor */
+.terminal-cursor-blink::after {
+  content: '▌';
+  animation: terminal-blink 1s step-end infinite;
+}
+
+@keyframes terminal-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Terminal-style text (mono + green glow) */
+.hacker-text {
+  font-family: 'JetBrains Mono', monospace;
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+/* Subtle "data stream" line - use on sections for hacker vibe */
+.hacker-underline {
+  position: relative;
+}
+
+.hacker-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(57, 255, 20, 0.6),
+    transparent
+  );
+  opacity: 0.8;
+}

@@ -40,6 +40,9 @@ export function IntelligenceTerminal() {
             <span className="relative z-10">INTELLIGENCE TERMINAL</span>
             <div className="absolute inset-0 bg-[#39FF14] blur-lg opacity-30" />
           </h2>
+          <p className="font-mono text-xs text-[#39FF14]/70 tracking-widest uppercase mb-2">
+            [ ACCESS GRANTED — SECURE CHANNEL ]
+          </p>
           <div className="flex justify-center gap-2 mt-4">
             <div className="w-2 h-2 bg-[#39FF14] animate-pulse" />
             <div className="w-2 h-2 bg-[#FF00FF] animate-pulse delay-100" />

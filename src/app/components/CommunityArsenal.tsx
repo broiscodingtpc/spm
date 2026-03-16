@@ -1,220 +1,193 @@
 import { motion } from 'motion/react';
-import { Users, Rocket, TrendingUp, Flame } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { ExternalLink, RefreshCw } from 'lucide-react';
+
+const API = 'https://api.rss2json.com/v1/api.json';
+
+// Real RSS feeds: war (Middle East, Europe), world news (Epstein coverage when it hits headlines)
+const FEEDS_BY_CATEGORY: { category: string; label: string; color: string; feeds: string[] }[] = [
+  {
+    category: 'epstein',
+    label: 'Epstein & documents',
+    color: '#FF00FF',
+    feeds: [
+      'https://feeds.bbci.co.uk/news/world/rss.xml',
+      'https://feeds.npr.org/1001/rss.xml',
+      'https://www.aljazeera.com/xml/rss/all.xml',
+    ],
+  },
+  {
+    category: 'war',
+    label: 'War & conflict',
+    color: '#FFD700',
+    feeds: [
+      'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml',
+      'https://feeds.bbci.co.uk/news/world/europe/rss.xml',
+      'https://feeds.bbci.co.uk/news/world/rss.xml',
+      'https://www.aljazeera.com/xml/rss/all.xml',
+    ],
+  },
+  {
+    category: 'justice',
+    label: 'Justice & victims',
+    color: '#39FF14',
+    feeds: [
+      'https://feeds.bbci.co.uk/news/world/rss.xml',
+      'https://feeds.npr.org/1001/rss.xml',
+    ],
+  },
+];
+
+type NewsItem = { title: string; link: string; date: string; category: string; categoryLabel: string; color: string };
+
+function stripHtml(html: string): string {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent ?? tmp.innerText ?? html;
+}
+
+function formatDate(pubDate: string | undefined): string {
+  if (!pubDate) return '';
+  try {
+    const d = new Date(pubDate);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  } catch {
+    return '';
+  }
+}
+
+async function fetchNews(): Promise<NewsItem[]> {
+  const items: NewsItem[] = [];
+
+  for (const group of FEEDS_BY_CATEGORY) {
+    for (const feedUrl of group.feeds) {
+      try {
+        const url = `${API}?rss_url=${encodeURIComponent(feedUrl)}&count=5`;
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.status !== 'ok' || !Array.isArray(data.items)) continue;
+        data.items.forEach((item: { title?: string; link?: string; pubDate?: string }) => {
+          if (item.title) {
+            items.push({
+              title: stripHtml(item.title).trim(),
+              link: item.link ?? '#',
+              date: formatDate(item.pubDate),
+              category: group.category,
+              categoryLabel: group.label,
+              color: group.color,
+            });
+          }
+        });
+      } catch {
+        // skip
+      }
+    }
+  }
+
+  const seen = new Set<string>();
+  return items.filter((i) => {
+    const key = i.title.slice(0, 60);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 24);
+}
+
+const FALLBACK_ITEMS: NewsItem[] = [
+  { title: 'Epstein court documents unsealed — names of world leaders revealed', link: '#', date: '', category: 'epstein', categoryLabel: 'Epstein & documents', color: '#FF00FF' },
+  { title: 'DOJ releases millions of Epstein investigation pages', link: '#', date: '', category: 'epstein', categoryLabel: 'Epstein & documents', color: '#FF00FF' },
+  { title: 'War headlines eclipse Epstein files — interest drops when conflict starts', link: '#', date: '', category: 'war', categoryLabel: 'War & conflict', color: '#FFD700' },
+  { title: 'Epstein victims demand justice as documents expose powerful figures', link: '#', date: '', category: 'justice', categoryLabel: 'Justice & victims', color: '#39FF14' },
+  { title: 'Child trafficking case: court records link elites to Epstein network', link: '#', date: '', category: 'justice', categoryLabel: 'Justice & victims', color: '#39FF14' },
+];
 
 export function CommunityArsenal() {
-  const [counts, setCounts] = useState({
-    holders: 0,
-    volume: 0,
-    burned: 0,
-    raids: 0
-  });
+  const [items, setItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = () => {
+    setLoading(true);
+    fetchNews()
+      .then((data) => setItems(data.length ? data : FALLBACK_ITEMS))
+      .catch(() => setItems(FALLBACK_ITEMS))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    // Animate counters
-    const targets = {
-      holders: 13337,
-      volume: 420690,
-      burned: 50,
-      raids: 999
-    };
-
-    const duration = 2000;
-    const steps = 60;
-    const interval = duration / steps;
-
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      const progress = step / steps;
-
-      setCounts({
-        holders: Math.floor(targets.holders * progress),
-        volume: Math.floor(targets.volume * progress),
-        burned: Math.floor(targets.burned * progress),
-        raids: Math.floor(targets.raids * progress)
-      });
-
-      if (step >= steps) {
-        clearInterval(timer);
-        setCounts(targets);
-      }
-    }, interval);
-
-    return () => clearInterval(timer);
+    load();
+    const t = setInterval(load, 1000 * 60 * 5);
+    return () => clearInterval(t);
   }, []);
 
-  const stats = [
-    {
-      icon: Users,
-      label: 'ACTIVE SOLDIERS',
-      value: counts.holders.toLocaleString(),
-      suffix: 'TROOPS',
-      color: '#39FF14',
-      glow: 'rgba(57, 255, 20, 0.5)'
-    },
-    {
-      icon: TrendingUp,
-      label: '24H WAR FUNDS',
-      value: `$${(counts.volume / 1000).toFixed(1)}K`,
-      suffix: 'USD',
-      color: '#FF00FF',
-      glow: 'rgba(255, 0, 255, 0.5)'
-    },
-    {
-      icon: Flame,
-      label: 'SUPPLY BURNED',
-      value: `${counts.burned}%`,
-      suffix: 'DESTROYED',
-      color: '#FF6600',
-      glow: 'rgba(255, 102, 0, 0.5)'
-    },
-    {
-      icon: Rocket,
-      label: 'RAIDS COMPLETED',
-      value: counts.raids.toLocaleString(),
-      suffix: 'MISSIONS',
-      color: '#FFD700',
-      glow: 'rgba(255, 215, 0, 0.5)'
-    }
-  ];
+  const displayItems = items.length > 0 ? items : FALLBACK_ITEMS;
 
   return (
     <section className="py-20 px-4 relative">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
+      <div className="max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-5xl font-pixel text-[#39FF14] mb-4">
-            COMMUNITY ARSENAL
+            REAL-TIME NEWS
           </h2>
           <p className="font-mono text-gray-400">
-            {'>'} REAL-TIME_BATTLEFIELD_STATS.exe
+            {'>'} Epstein · War · Justice — live headlines
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={index}
-                className="relative"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                {/* Command Panel */}
-                <div className="relative bg-[#0D0D0D] border-8 border-[#2a2a2a] p-6
-                              shadow-[inset_0_0_30px_rgba(0,0,0,0.9),0_0_20px_rgba(0,0,0,0.5)]
-                              overflow-hidden group hover:border-opacity-100 transition-all duration-300"
-                     style={{ borderColor: stat.color, borderOpacity: 0.5 }}>
-                  
-                  {/* Animated background glow */}
-                  <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
-                    style={{ backgroundColor: stat.color }}
-                    animate={{
-                      boxShadow: [
-                        `inset 0 0 20px ${stat.glow}`,
-                        `inset 0 0 40px ${stat.glow}`,
-                        `inset 0 0 20px ${stat.glow}`
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-
-                  {/* Corner indicators */}
-                  <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2"
-                       style={{ borderColor: stat.color }} />
-                  <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2"
-                       style={{ borderColor: stat.color }} />
-                  <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2"
-                       style={{ borderColor: stat.color }} />
-                  <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2"
-                       style={{ borderColor: stat.color }} />
-
-                  {/* Icon */}
-                  <div className="relative flex justify-center mb-4">
-                    <div className="relative">
-                      <Icon className="w-12 h-12 relative z-10" style={{ color: stat.color }} />
-                      <motion.div
-                        className="absolute inset-0 blur-lg"
-                        style={{ backgroundColor: stat.color }}
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Label */}
-                  <p className="text-xs font-pixel text-gray-400 mb-3 text-center tracking-tight leading-relaxed">
-                    {stat.label}
-                  </p>
-
-                  {/* Value */}
-                  <div className="relative">
-                    <div className="bg-[#1a1a1a] border-4 border-[#0D0D0D] p-3 mb-2">
-                      <p className="text-3xl font-pixel text-center" style={{ color: stat.color }}>
-                        {stat.value}
-                      </p>
-                    </div>
-                    <p className="text-xs font-mono text-center text-gray-500">
-                      [{stat.suffix}]
-                    </p>
-                  </div>
-
-                  {/* Status bar */}
-                  <div className="mt-4 h-2 bg-[#1a1a1a] border-2 border-[#2a2a2a] overflow-hidden">
-                    <motion.div
-                      className="h-full"
-                      style={{ backgroundColor: stat.color }}
-                      initial={{ width: 0 }}
-                      whileInView={{ width: '100%' }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.5, delay: index * 0.1 }}
-                    />
-                  </div>
-
-                  {/* Scanlines */}
-                  <div className="absolute inset-0 pointer-events-none opacity-10"
-                       style={{
-                         backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)'
-                       }} />
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="flex items-center gap-2 font-mono text-xs text-[#39FF14] hover:text-[#FFD700] disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
         </div>
 
-        {/* Bottom Status Line */}
-        <motion.div
-          className="mt-12 text-center"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="inline-block bg-[#1a1a1a] border-4 border-[#39FF14] px-8 py-4
-                         shadow-[0_0_20px_rgba(57,255,20,0.3)]">
-            <p className="font-mono text-sm">
-              <span className="text-[#39FF14]">{'>'} STATUS:</span>
-              <motion.span 
-                className="ml-2 text-[#FFD700]"
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                ALL SYSTEMS OPERATIONAL
-              </motion.span>
-            </p>
-          </div>
-        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {displayItems.map((item, index) => (
+            <motion.a
+              key={`${item.category}-${index}-${item.title.slice(0, 30)}`}
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block relative bg-[#0D0D0D] border-4 p-4 hover:border-opacity-100 transition-all group"
+              style={{ borderColor: item.color, borderOpacity: 0.6 }}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: Math.min(index * 0.03, 0.3) }}
+            >
+              <div className="absolute top-0 left-0 w-2 h-full" style={{ backgroundColor: item.color }} />
+              <div className="pl-3">
+                <span className="font-mono text-[10px] uppercase tracking-wider" style={{ color: item.color }}>
+                  {item.categoryLabel}
+                </span>
+                {item.date && (
+                  <span className="font-mono text-[10px] text-gray-500 ml-2">{item.date}</span>
+                )}
+                <p className="font-mono text-sm text-gray-200 mt-1 line-clamp-3 group-hover:text-white transition-colors">
+                  {item.title}
+                </p>
+                <span className="inline-flex items-center gap-1 font-mono text-xs mt-2 text-gray-500 group-hover:text-[#39FF14]">
+                  <ExternalLink className="w-3 h-3" /> Read
+                </span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
       </div>
     </section>
   );
