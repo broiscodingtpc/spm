@@ -10,6 +10,7 @@ import { NFTArsenal } from './components/NFTArsenal';
 import { MediaVault } from './components/MediaVault';
 import { EpisodesSection } from './components/EpisodesSection';
 import { DocumentVault } from './components/DocumentVault';
+import { EssaySection } from './components/EssaySection';
 import { JMailPortal } from './components/JMailPortal';
 import { WarningBanner } from './components/WarningBanner';
 import { Footer } from './components/Footer';
@@ -56,6 +57,7 @@ export default function App() {
         <main className="pt-6 relative z-10">
         <HeroSection />
         <VideoPrizeBanner />
+        <EssaySection />
         <MissionSection />
         <IntelligenceTerminal />
         <BattleMap />
