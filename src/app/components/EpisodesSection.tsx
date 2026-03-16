@@ -1,13 +1,16 @@
 import { motion } from 'motion/react';
-import { Film, Play } from 'lucide-react';
+import { Film, Play, Clock } from 'lucide-react';
 
 const PINATA_BASE = 'https://crimson-traditional-mastodon-846.mypinata.cloud/ipfs';
 
-const episodes = [
+const episodes: { src?: string; title: string; color: string; comingSoon?: boolean }[] = [
   { src: `${PINATA_BASE}/bafybeiau4lemulyiqgitpayjgxwwxwlaywxbkgkmqv4zchs7k2svwxbpzy`, title: 'Intro Trailer', color: '#39FF14' },
   { src: `${PINATA_BASE}/bafybeiasn3xkdfdfvd32zwggqggo5kkbxltwvdmrbjdtx3c2uw7eyyzbbu`, title: 'Pilot Episode', color: '#FF00FF' },
   { src: `${PINATA_BASE}/bafybeihlktwb4muwj7pv5ej5j6wdny7553msbp4uwkkkoilqz4k457vg2i`, title: 'Episode 1', color: '#FFD700' },
   { src: `${PINATA_BASE}/bafybeifdkp6lzwrxn4zenl3x474qicztwbxwwvsehnxvcdmtwt62zacdx4`, title: 'Episode 2', color: '#39FF14' },
+  { title: 'Episode 3', color: '#FF00FF', comingSoon: true },
+  { title: 'Episode 4', color: '#FFD700', comingSoon: true },
+  { title: 'Episode 5', color: '#39FF14', comingSoon: true },
 ];
 
 export function EpisodesSection() {
@@ -48,10 +51,10 @@ export function EpisodesSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
           {episodes.map((episode, index) => (
             <motion.div
-              key={episode.src}
+              key={episode.title + index}
               className="relative group"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -68,19 +71,29 @@ export function EpisodesSection() {
                 <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b-4 border-r-4" style={{ borderColor: episode.color }} />
 
                 <div className="relative overflow-hidden bg-[#1a1a1a] border-4 border-[#2a2a2a]">
-                  <video
-                    src={episode.src}
-                    controls
-                    className="w-full aspect-video object-contain bg-black"
-                    preload="metadata"
-                    playsInline
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0D0D0D] to-transparent p-3 flex items-center gap-2">
-                    <Play className="w-5 h-5 shrink-0" style={{ color: episode.color }} />
-                    <span className="font-pixel text-sm" style={{ color: episode.color }}>
-                      {episode.title}
-                    </span>
-                  </div>
+                  {episode.comingSoon ? (
+                    <div className="w-full aspect-video flex flex-col items-center justify-center gap-4 bg-[#0D0D0D]">
+                      <Clock className="w-12 h-12 md:w-16 md:h-16 text-gray-600" />
+                      <span className="font-pixel text-lg md:text-xl text-gray-500">COMING SOON</span>
+                      <span className="font-mono text-sm text-gray-600">{episode.title}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <video
+                        src={episode.src}
+                        controls
+                        className="w-full aspect-video object-contain bg-black"
+                        preload="metadata"
+                        playsInline
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0D0D0D] to-transparent p-3 flex items-center gap-2">
+                        <Play className="w-5 h-5 shrink-0" style={{ color: episode.color }} />
+                        <span className="font-pixel text-sm" style={{ color: episode.color }}>
+                          {episode.title}
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-3 flex items-center justify-between">

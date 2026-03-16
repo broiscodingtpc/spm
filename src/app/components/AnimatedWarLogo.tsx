@@ -189,12 +189,10 @@ function IsraelFlagStrip({ className }: { className?: string }) {
     >
       <svg viewBox="0 0 60 40" className="w-full h-full" preserveAspectRatio="none">
         <rect width="60" height="40" fill="#FFF" />
-        <rect y="14" width="60" height="12" fill="#0038B8" />
-        <rect y="17" width="60" height="6" fill="#FFF" />
-        <path
-          d="M30 12 L32 18 L38 18 L33 22 L35 28 L30 24 L25 28 L27 22 L22 18 L28 18 Z"
-          fill="#0038B8"
-        />
+        <rect y="0" width="60" height="6.67" fill="#0038B8" />
+        <rect y="33.33" width="60" height="6.67" fill="#0038B8" />
+        <path d="M30 11 L38 21 L22 21 Z" fill="#0038B8" />
+        <path d="M30 29 L22 19 L38 19 Z" fill="#0038B8" />
       </svg>
     </motion.div>
   );

@@ -57,6 +57,7 @@ export default function App() {
         <main className="pt-6 relative z-10">
         <HeroSection />
         <VideoPrizeBanner />
+        <EpisodesSection />
         <EssaySection />
         <MissionSection />
         <IntelligenceTerminal />
@@ -64,7 +65,6 @@ export default function App() {
         <CommunityArsenal />
         <NFTArsenal />
         <MediaVault />
-        <EpisodesSection />
         <DocumentVault />
         <JMailPortal />
         <WarningBanner />
